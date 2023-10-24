@@ -1,4 +1,5 @@
 ubuntu-bionic*
 .vagrant
 .vscode
-.env
+env
+node_modules
