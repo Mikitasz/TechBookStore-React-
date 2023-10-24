@@ -3,8 +3,12 @@ import { Link } from "react-router-dom"; // Assuming you're using React Router
 import upImg from "../assets/upImg.svg";
 import downImg from "../assets/downImg.svg";
 import { isUserLoggedIn } from "../services/IsAuth";
+import { handleLogout } from "../services/LogOut";
 const Navbar = () => {
   const isLoggedIn = isUserLoggedIn();
+  const handleLogoutClick = async () => {
+    await handleLogout();
+  };
   return (
     <header>
       <nav className="bg-white p-5">
@@ -31,12 +35,22 @@ const Navbar = () => {
           </div>
           <div class="flex space-x-9 text-lg font-regular font-serif">
             {isLoggedIn ? (
-              <Link
+               <>
+              <button onClick={handleLogoutClick}
                 to="#"
                 className="bg-white  hover:bg-slate-300 w-20 text-center text-black  rounded-bl-lg rounded-tr-lg relative "
               >
                 Log Out
-              </Link>
+              </button>
+              <Link
+                  to="/profile"
+                  className="bg-white  hover:bg-slate-300 w-20 text-center text-black  rounded-bl-lg rounded-tr-lg relative "
+                >
+                  Profile
+                </Link>
+
+              </>
+              
             ) : (
               <>
                 <Link

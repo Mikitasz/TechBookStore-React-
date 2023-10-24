@@ -3,7 +3,12 @@ import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8000/users_a/login/';
 
+
+
 const login = async (username, password) => {
+  
+
+
   try {
     const response = await axios.post(BASE_URL, {
       username,
@@ -13,7 +18,10 @@ const login = async (username, password) => {
     // Handle the response here
     if (response.status === 200) {
       // Successful login, you can do something here
+      window.location.href = '/';
+       // New line
       return response.data;
+      
     } else {
       // Handle other cases (e.g., show an error message)
       throw new Error('Login failed');
@@ -23,6 +31,7 @@ const login = async (username, password) => {
     console.error('Error logging in:', error);
     throw error;
   }
+  
 };
 
 export default {
