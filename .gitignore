@@ -1,0 +1,4 @@
+ubuntu-bionic*
+.vagrant
+.vscode
+.env
