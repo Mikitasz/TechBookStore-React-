@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import LogInAPI from '../services/LogInAPI';
-
+import LogInAPI from '../services/API/LogInAPI';
+import Cookies from 'js-cookie';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -9,7 +9,8 @@ function Login() {
  
   // Check authentication on page load
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Check for the presence of the token in local storage
+    
+    const token = Cookies.get("token"); // Retri // Check for the presence of the token in local storage
     if (token) {
       setLoggedIn(true);
     }
@@ -18,10 +19,10 @@ function Login() {
   const handleLogin = async () => {
     try {
       const userData = await LogInAPI.login(username, password);
-      console.log(userData);
+   
 
       // Store the authentication token in local storage
-      localStorage.setItem('token', userData.token);
+      Cookies.set('token', userData.token, { expires: 7, secure: true, sameSite: 'strict' });
 
 
       setLoggedIn(true);

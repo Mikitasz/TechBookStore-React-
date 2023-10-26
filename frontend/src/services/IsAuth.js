@@ -1,6 +1,5 @@
-
+import Cookies from "js-cookie";
 export function isUserLoggedIn() {
-    const token = localStorage.getItem('token');
-    return !!token; 
-  }
-  
+  const token = Cookies.get("token");
+  return !!token;
+}

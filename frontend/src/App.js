@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LogInPage"
 import SignUpPage from "./pages/SignupPage";
+import ProfilePage from "./pages/ProfilePage"
 const App = () => {
   return (
     <>
@@ -12,6 +13,7 @@ const App = () => {
         <Route exact element={<HomePage />} path="/" />
         <Route exact element={<LoginPage />} path="/login" />
         <Route exact element={<SignUpPage />} path="/signup" />
+        <Route exact element={<ProfilePage />} path="/profile" />
       </Routes>
     </>
   );
