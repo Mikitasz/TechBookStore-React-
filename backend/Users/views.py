@@ -1,28 +1,53 @@
-from django.shortcuts import render
+
 from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from django.views.decorators.csrf import ensure_csrf_cookie
+
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from .serializer import UserSerializer, LoginSerializer, CurrentUserSerializer, LogoutResponseSerializer
-from django.contrib.auth import authenticate, login, logout
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth import authenticate, login
+
+
 from rest_framework import status
-from rest_framework.decorators import api_view
+
 from rest_framework.views import APIView
-from django.contrib.auth import login, logout
+from django.contrib.auth import login
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from .serializer import UserProfileSerialize
+from .models import UserProfile
 
 
+
+class UserProfileView(APIView):
+    def get(self, request):
+        profiles = UserProfile.objects.all()
+        serializer = UserProfileSerialize(profiles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = UserProfileSerialize(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def put(self, request, user):
+        try:
+            user_profile = UserProfile.objects.get(pk=user)
+        except UserProfile.DoesNotExist:
+            return Response({'message': 'User profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserProfileSerialize(user_profile, data=request.data, partial=True)  # Use partial=True to allow partial updates
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class change_last_name(APIView):
     def post(self, request):
         new_last_name = request.data.get('last_name')
@@ -112,7 +137,7 @@ class LoginView(APIView):
                 login(request, user)
                 print(request.headers)
                 token, created = Token.objects.get_or_create(user=user)
-                
+
                 return Response({'token': token.key})
             else:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

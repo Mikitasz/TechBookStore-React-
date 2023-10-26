@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ChangeLastName } from "../services/API/ChangeLastNameAPI";
 import { ChangeFirstName } from "../services/API/ChangeFirstNameAPI";
 
+
 const ProfilePage = () => {
   const [user, setUser] = useState({});
   const [activeSection, setActiveSection] = useState("info");
@@ -60,7 +61,7 @@ const ProfilePage = () => {
 
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-
+  
   const changeSection = (section) => {
     setActiveSection(section);
     setCurrentPage(1);
