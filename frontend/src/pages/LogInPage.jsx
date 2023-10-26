@@ -20,7 +20,7 @@ function Login() {
     try {
       const userData = await LogInAPI.login(username, password);
    
-
+      
       // Store the authentication token in local storage
       Cookies.set('token', userData.token, { expires: 7, secure: true, sameSite:"Strict" });
 
