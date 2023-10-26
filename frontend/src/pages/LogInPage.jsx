@@ -22,7 +22,7 @@ function Login() {
    
 
       // Store the authentication token in local storage
-      Cookies.set('token', userData.token, { expires: 7, secure: true, sameSite: 'strict' });
+      Cookies.set('token', userData.token, { expires: 7, secure: true, sameSite:"Strict" });
 
 
       setLoggedIn(true);
