@@ -2,6 +2,7 @@ import { GetUser } from "../services/API/GetCurrentUserApi";
 import React, { useState, useEffect } from "react";
 import { ChangeLastName } from "../services/API/ChangeLastNameAPI";
 import { ChangeFirstName } from "../services/API/ChangeFirstNameAPI";
+
 const ProfilePage = () => {
   const [user, setUser] = useState({});
   const [activeSection, setActiveSection] = useState("info");
@@ -121,6 +122,7 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-7xl mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg  flex flex-row relative">
+      
       <div className="flex-1">
         <div className="mt-4">
           <button

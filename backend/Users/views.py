@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from .serializer import UserSerializer, LoginSerializer, CurrentUserSerializer, LogoutResponseSerializer
 from django.contrib.auth import authenticate, login, logout
@@ -107,7 +110,9 @@ class LoginView(APIView):
 
             if user is not None:
                 login(request, user)
+                print(request.headers)
                 token, created = Token.objects.get_or_create(user=user)
+                
                 return Response({'token': token.key})
             else:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -158,3 +163,8 @@ class UserView(APIView):
             serialize.save()
             return Response(serialize.data)
 # Create your views here.
+
+
+def get_csrf_token(request):
+
+    return JsonResponse({'csrfToken': get_token(request)})

@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import LogInAPI from '../services/API/LogInAPI';
-import Cookies from 'js-cookie';
+import React, { useState, useEffect } from "react";
+import LogInAPI from "../services/API/LogInAPI";
+import Cookies from "js-cookie";
 
 function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false); // To track authentication status
- 
+
   // Check authentication on page load
   useEffect(() => {
-    
     const token = Cookies.get("token"); // Retri // Check for the presence of the token in local storage
     if (token) {
       setLoggedIn(true);
@@ -19,29 +18,28 @@ function Login() {
   const handleLogin = async () => {
     try {
       const userData = await LogInAPI.login(username, password);
-   
 
       // Store the authentication token in local storage
-      Cookies.set('token', userData.token, { expires: 7, secure: true, sameSite: 'strict' });
-
+      Cookies.set("token", userData.token, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
 
       setLoggedIn(true);
-      
-      console.log('Login successful');
+
+      console.log("Login successful");
     } catch (error) {
       // Handle login error, e.g., show an error message
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
-  }
-
-  
+  };
 
   return (
     <div>
+     
       {loggedIn ? (
-        <div>
-          
-        </div>
+        <div></div>
       ) : (
         <div>
           <input
