@@ -13,7 +13,7 @@ export const ChangeFirstName = async (NewFirstName) => {
     };
     console.log(data);
     const response = await axios.post(
-      "http://127.0.0.1:8000/users_a/change-first-name/",
+      "http://127.0.0.1:8000/api/changefirstname",
       data,
       { headers: headers }
     );

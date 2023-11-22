@@ -18,17 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from Users.views import UserView
-from books.views import CategoryView,BookView
-from Users import urls as u_urls
 
+
+from Users import urls as u_urls
+from books import urls as b_urls
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users_a/',include(u_urls)),
-    path('users_api/', UserView.as_view(),name="anythinh"),
-    path('', BookView.as_view(),name="anythinh2"),
-    path('cataegory_api/', CategoryView.as_view(),name="anythinh"),
+    path('',include(u_urls)),
+    path('books-api/',include(b_urls)),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

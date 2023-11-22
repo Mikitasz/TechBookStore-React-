@@ -1,8 +1,12 @@
-import { GetUser } from "../services/API/GetCurrentUserApi";
 import React, { useState, useEffect } from "react";
+import { GetUser } from "../services/API/GetCurrentUserApi";
 import { ChangeLastName } from "../services/API/ChangeLastNameAPI";
 import { ChangeFirstName } from "../services/API/ChangeFirstNameAPI";
-
+import { Link } from "react-router-dom";
+import { getUserLikeBooks } from "../services/API/GetUserLikesBooks"; // Импорт функции для получения книг пользователя
+import { GetId } from "../services/API/GetIdAPI";
+import { getUserorderBooks } from "../services/API/GetUserOrderBooks";
+const BASE_URL = "http://localhost:8000/media/";
 
 const ProfilePage = () => {
   const [user, setUser] = useState({});
@@ -14,43 +18,14 @@ const ProfilePage = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
-  const [books, setBooks] = useState([
-    {
-      id: 1,
-      title: "Book 1",
-      image: "book.svg",
-    },
-    {
-      id: 2,
-      title: "Book 2",
-      image: "book.svg",
-    },
-    {
-      id: 3,
-      title: "Book 3",
-      image: "book.svg",
-    },
-    {
-      id: 4,
-      title: "Book 4",
-      image: "book.svg",
-    },
-    {
-      id: 5,
-      title: "Book 5",
-      image: "book.svg",
-    },
-    {
-      id: 6,
-      title: "Book 6",
-      image: "book.svg",
-    },
-  ]);
+  const [likedBooks, setLikedBooks] = useState([]);
+  const [orderedBooks, setOrderedBooks] = useState([]); // Состояние для хранения книг, добавленных в избранное
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await GetUser();
+
         setUser(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -58,10 +33,37 @@ const ProfilePage = () => {
     }
     fetchData();
   }, []);
+  useEffect(() => {
+    async function fetchOrderedBooks() {
+      try {
+        const userId = await GetId();
+        const orderedBooksData = await getUserorderBooks(userId);
 
-  const itemsPerPage = 5;
+        setOrderedBooks(orderedBooksData);
+      } catch (error) {
+        console.error("Error fetching ordered books:", error);
+      }
+    }
+    fetchOrderedBooks();
+  }, []);
+  useEffect(() => {
+    async function fetchLikedBooks() {
+      try {
+        const userId = await GetId();
+
+        const booksData = await getUserLikeBooks(userId);
+
+        setLikedBooks(booksData);
+      } catch (error) {
+        console.error("Error fetching liked books:", error);
+      }
+    }
+    fetchLikedBooks();
+  }, []);
+
+  const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   const changeSection = (section) => {
     setActiveSection(section);
     setCurrentPage(1);
@@ -72,23 +74,20 @@ const ProfilePage = () => {
     setCurrentPage(page);
   };
 
-  const getBooksToDisplay = () => {
-    switch (activeSection) {
-      case "wishlist":
-        return books;
-      case "likes":
-        return books;
-      case "orders":
-        return books;
-      default:
-        return [];
-    }
-  };
-
-  const totalPages = Math.ceil(getBooksToDisplay().length / itemsPerPage);
+  const likedBooksArray = likedBooks.liked_books_count || [];
+  const totalPages = Math.ceil(likedBooksArray.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedBooks = getBooksToDisplay().slice(startIndex, endIndex);
+  const displayedBooks = likedBooksArray.slice(startIndex, endIndex);
+
+  const orderBooksArray = orderedBooks.order_books_count || [];
+  const totalPagesOrder = Math.ceil(orderBooksArray.length / itemsPerPage);
+  const startIndexOrder = (currentPage - 1) * itemsPerPage;
+  const endIndexOrder = startIndexOrder + itemsPerPage;
+  const displayedOrderBooks = orderBooksArray.slice(
+    startIndexOrder,
+    endIndexOrder
+  );
 
   const handlePasswordChange = () => {
     // Implement password change logic here
@@ -101,31 +100,27 @@ const ProfilePage = () => {
   const handleFirstNameChange = async () => {
     try {
       await ChangeFirstName(newFirstName);
-
-      console.log("Last name changed successfully:");
+      console.log("First name changed successfully");
       window.location.reload();
     } catch (error) {
-      console.log("Error changing last name:", error);
+      console.log("Error changing first name:", error);
     }
   };
 
   const handleLastNameChange = async () => {
     try {
       await ChangeLastName(newLastName);
-
       window.location.reload();
-
-      console.log("Last name changed successfully:");
+      console.log("Last name changed successfully");
     } catch (error) {
       console.log("Error changing last name:", error);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg  flex flex-row relative">
+    <div className="max-w-7xl mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg  ">
       
-      <div className="flex-1">
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center ">
           <button
             onClick={() => changeSection("info")}
             className={`${
@@ -136,16 +131,7 @@ const ProfilePage = () => {
           >
             User Info
           </button>
-          <button
-            onClick={() => changeSection("wishlist")}
-            className={`${
-              activeSection === "wishlist"
-                ? "bg-blue-500 text-white"
-                : "bg-blue-200"
-            } p-2 rounded-md mx-2`}
-          >
-            Wishlist
-          </button>
+
           <button
             onClick={() => changeSection("likes")}
             className={`${
@@ -169,7 +155,7 @@ const ProfilePage = () => {
         </div>
 
         {activeSection === "info" && (
-          <div className="mt-4">
+          <div className="mt-4 ">
             <div>
               <p>User Information:</p>
               <p>Name: {user.username}</p>
@@ -255,52 +241,107 @@ const ProfilePage = () => {
             )}
           </div>
         )}
-      </div>
+     
 
-      <div className="flex-1">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mt-4">{user.username}</h2>
-          <p className="text-gray-600">{user.email}</p>
-        </div>
-        {(activeSection === "wishlist" ||
-          activeSection === "likes" ||
-          activeSection === "orders") && (
-          <div className="mt-4">
-            <p>{activeSection === "wishlist" ? "Wishlist" : ""}</p>
-            <p>{activeSection === "likes" ? "Likes" : ""}</p>
-            <p>{activeSection === "orders" ? "My Orders" : ""}</p>
-            <div className="flex flex-wrap justify-left">
-              {displayedBooks.map((book) => (
-                <div key={book.id} className="m-2">
-                  <img
-                    src={book.image}
-                    alt={book.title}
-                    className="w-24 h-24 object-cover rounded transition transform hover:scale-110"
-                  />
-                  <p className="text-center mt-2">{book.title}</p>
-                </div>
+      {activeSection === "likes" && (
+        <div className="mt-20 ">
+          <div className="flex justify-center">
+            {displayedBooks.map((book) => (
+              <div key={book.id} className="m-2">
+                <Link to={`/books/${book.id}`}>
+                  <div className="bg-white rounded-lg p-4 shadow-md transition transform hover:scale-105 flex flex-col items-center">
+                    <img
+                      src={`${BASE_URL}${book.image}`}
+                      alt={book.title}
+                      className="w-24 h-32 object-cover rounded-lg mb-2 justify-center"
+                    />
+                    <div>
+                      <p
+                        className="text-lg font-semibold"
+                        style={{
+                          width: "120px",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {book.name}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <div className="mt-4 flex justify-center">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`${
+                    currentPage === index + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-blue-200"
+                  } p-2 rounded-md mx-1`}
+                >
+                  {index + 1}
+                </button>
               ))}
             </div>
-            {totalPages > 1 && (
-              <div className="mt-4">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePageChange(index + 1)}
-                    className={`${
-                      currentPage === index + 1
-                        ? "bg-blue-500 text-white"
-                        : "bg-blue-200"
-                    } p-2 rounded-md mx-1`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+          )}
+        </div>
+      )}
+
+      {activeSection === "orders" && (
+        <div className="mt-20">
+          <div className="flex flex-wrap justify-center">
+            {displayedOrderBooks.map((book) => (
+              <div key={book.id} className="m-2 ">
+                <Link to={`/books/${book.id}`}>
+                  <div className="bg-white rounded-lg p-4 shadow-md transition transform hover:scale-105 flex flex-col items-center">
+                    <img
+                      src={`${BASE_URL}${book.image}`}
+                      alt={book.title}
+                      className="w-24 h-32 object-cover rounded-lg mb-2 "
+                    />
+                    <div>
+                      <p
+                        className="text-lg font-semibold"
+                        style={{
+                          width: "120px",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {book.name}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
               </div>
-            )}
+            ))}
           </div>
-        )}
-      </div>
+          {totalPages > 1 && (
+            <div className="mt-4 flex justify-center">
+              {Array.from({ length: totalPagesOrder }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`${
+                    currentPage === index + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-blue-200"
+                  } p-2 rounded-md mx-1`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

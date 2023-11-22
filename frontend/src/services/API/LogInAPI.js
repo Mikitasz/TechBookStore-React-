@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:8000/users_a/login/";
+const BASE_URL = "http://127.0.0.1:8000/api/login/";
 
 const login = async (username, password) => {
   try {

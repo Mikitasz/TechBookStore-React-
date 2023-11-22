@@ -13,7 +13,7 @@ export const ChangeLastName = async (NewLastName) => {
     };
     console.log(data);
     const response = await axios.post(
-      "http://127.0.0.1:8000/users_a/change-last-name/",
+      "http://127.0.0.1:8000/api/changelastname",
       data,
       { headers: headers }
     );

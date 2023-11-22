@@ -11,7 +11,7 @@ export const GetUser = async () => {
     };
     
     const response = await axios.get(
-      "http://127.0.0.1:8000/users_a/current/",
+      "http://127.0.0.1:8000/api/currentuserinfo",
 
       { headers: headers }
     );

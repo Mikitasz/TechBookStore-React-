@@ -18,19 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from Users.views import RegisterView, LoginView, LogoutView, CurrentUserView, change_last_name, change_first_name, get_csrf_token,UserProfileView
 
-from django.urls import path, include
+from .views import UserRegisterView, LogInView, LogOutView,CurrentUserView,ChangeLastName,ChangeFirstName,ChangeEmailView,ChangePasswordView,GetId
 
-urlpatterns = [
-    path('get-csrf-token/', get_csrf_token, name='get_csrf_token'),
-    path("like/",UserProfileView.as_view(),name="liek"),
-    path('change-first-name/', change_first_name.as_view(),
-         name='change_first_name'),
-    path('change-last-name/', change_last_name.as_view(), name='change_last_name'),
-    path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('current/', CurrentUserView.as_view(), name='current')
-
+urlpatterns = [ 
+    path('api/getid',GetId.as_view(),name="getid"),
+    path('api/changepassword',ChangePasswordView.as_view(),name="changepassword"),
+    path('api/changeemail',ChangeEmailView.as_view(),name="changeemail"),
+    path('api/changefirstname',ChangeFirstName.as_view(),name="firstnamechange"),
+    path('api/changelastname',ChangeLastName.as_view(),name="lastnamechange"),
+    path('api/currentuserinfo',CurrentUserView.as_view(),name="current"),
+    path('api/logout', LogOutView.as_view(), name="logout"),
+    path("api/register/", UserRegisterView.as_view(), name="allusers"),
+    path("api/login/", LogInView.as_view(), name="login"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
